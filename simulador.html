@@ -5,81 +5,181 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simulador de Batalha de Animais</title>
 
+    <!-- Adicionando a fonte Poppins do Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
     <style>
+        /* --- NOVA PALETA DE CORES E ESTILO GERAL --- */
         :root {
-            --cor-fundo: #181a1b; --cor-painel: #25282a; --cor-arena: #202223;
-            --cor-texto: #e2e2e2; --cor-primaria: #00ff89; --cor-time1: #00aaff;
-            --cor-time2: #ff4757; --cor-aviso: #f39c12; --sombra-padrao: 0 4px 15px rgba(0, 0, 0, 0.2);
+            --cor-fundo: #181a1b;
+            --cor-painel: #25282a;
+            --cor-arena: #202223;
+            --cor-texto: #e2e2e2;
+            --cor-primaria: #00ff89; /* Verde Neon */
+            --cor-time1: #00aaff;
+            --cor-time2: #ff4757;
+            --cor-aviso: #f39c12;
+            --sombra-padrao: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            font-family: 'Poppins', sans-serif; background-color: var(--cor-fundo);
-            color: var(--cor-texto); padding: 10px; overflow: hidden;
+            font-family: 'Poppins', sans-serif; /* Usando a nova fonte */
+            background-color: var(--cor-fundo);
+            color: var(--cor-texto);
+            padding: 10px;
+            overflow: hidden;
         }
-        .container { display: flex; flex-direction: column; height: 95vh; }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 95vh;
+        }
+
         h1 {
-            text-align: center; font-weight: 700; font-size: 2em; color: var(--cor-texto);
-            text-shadow: 0 0 10px var(--cor-primaria); margin-bottom: 15px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 2em;
+            color: var(--cor-texto);
+            text-shadow: 0 0 10px var(--cor-primaria);
+            margin-bottom: 15px;
+            transition: text-shadow 0.3s ease;
         }
+
+        /* --- ESTILO DO PAINEL DE CONTROLE --- */
         #painel-controle {
-            background-color: var(--cor-painel); padding: 20px; border-radius: 12px;
-            display: flex; justify-content: center; align-items: center; gap: 15px;
-            flex-wrap: wrap; border-top: 3px solid var(--cor-primaria); box-shadow: var(--sombra-padrao);
+            background-color: var(--cor-painel);
+            padding: 20px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            border-top: 3px solid var(--cor-primaria);
+            box-shadow: var(--sombra-padrao);
         }
+
+        /* Estilo base para todos os controles */
         select, input, button {
-            font-family: 'Poppins', sans-serif; font-size: 16px; padding: 10px 15px;
-            border-radius: 8px; border: 2px solid transparent; background-color: #3d4042;
-            color: var(--cor-texto); transition: all 0.2s ease-in-out;
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 2px solid transparent;
+            background-color: #3d4042;
+            color: var(--cor-texto);
+            transition: all 0.2s ease-in-out;
         }
+
         select:focus, input:focus {
-            outline: none; border-color: var(--cor-primaria); box-shadow: 0 0 10px var(--cor-primaria);
+            outline: none;
+            border-color: var(--cor-primaria);
+            box-shadow: 0 0 10px rgba(0, 255, 137, 0.5);
         }
-        button { cursor: pointer; font-weight: 600; box-shadow: var(--sombra-padrao); }
-        button:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3); }
-        button:active { transform: translateY(0); box-shadow: var(--sombra-padrao); }
-        button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        /* Estilo dos Botões */
+        button {
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: var(--sombra-padrao);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+            box-shadow: var(--sombra-padrao);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Botões de Adicionar Time */
         #adicionar-time1 { border-color: var(--cor-time1); background-color: transparent; }
         #adicionar-time1:hover { background-color: var(--cor-time1); color: #fff; }
+
         #adicionar-time2 { border-color: var(--cor-time2); background-color: transparent; }
         #adicionar-time2:hover { background-color: var(--cor-time2); color: #fff; }
+
+        /* Botão Principal de Luta */
         #botao-lutar {
-            border: none; color: #111; font-weight: 700;
+            border: none;
+            color: #111;
+            font-weight: 700;
             background: linear-gradient(45deg, var(--cor-primaria), #00e078);
         }
-        #botao-lutar:hover { box-shadow: 0 0 20px var(--cor-primaria); }
-        #botao-resetar { background-color: #555; }
-        #botao-resetar:hover { background-color: var(--cor-aviso); color: #111; }
+        #botao-lutar:hover {
+             box-shadow: 0 0 20px rgba(0, 255, 137, 0.7);
+        }
+        
+        #botao-resetar {
+            background-color: #555;
+        }
+        #botao-resetar:hover {
+            background-color: var(--cor-aviso);
+            color: #111;
+        }
+
+
+        /* --- ARENA E ELEMENTOS DE JOGO --- */
         #arena-container {
-            flex-grow: 1; margin-top: 15px; background-color: var(--cor-arena);
-            border: 2px solid #333; border-radius: 8px; position: relative; overflow: hidden;
+            flex-grow: 1;
+            margin-top: 15px;
+            background-color: var(--cor-arena);
+            border: 2px solid #333;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
         }
         .combatente {
-            position: absolute; border-radius: 50%; display: flex; justify-content: center;
-            align-items: center; transition: opacity 0.5s;
+            position: absolute;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s;
         }
         .combatente-corpo {
             width: 100%; height: 100%; border-radius: 50%;
             box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
         }
         .barra-vida-fundo {
-            position: absolute; bottom: -12px; width: 120%; background-color: rgba(0,0,0,0.5);
-            border-radius: 3px; height: 6px; border: 1px solid #000;
+            position: absolute; bottom: -12px; width: 120%;
+            background-color: rgba(0,0,0,0.5); border-radius: 3px; height: 6px;
+            border: 1px solid #000;
         }
         .barra-vida-preenchimento {
-            background-color: var(--cor-primaria); height: 100%; transition: width 0.2s linear;
+            background-color: var(--cor-primaria); height: 100%;
+            transition: width 0.2s linear;
         }
         .hit-effect {
-            position: absolute; border-radius: 50%; border: 3px solid yellow;
+            position: absolute;
+            border-radius: 50%;
+            border: 3px solid yellow;
             animation: hit-anim 0.3s forwards;
+            pointer-events: none;
         }
         @keyframes hit-anim {
             from { width: 80%; height: 80%; opacity: 1; }
             to { width: 150%; height: 150%; opacity: 0; }
         }
+
     </style>
 </head>
 <body>
@@ -95,6 +195,7 @@
         </div>
         <div id="arena-container"></div>
     </div>
+
     <script>
         const animaisBase = [
             // Insetos e Aracnídeos
@@ -102,24 +203,32 @@
             { nome: 'Formiga-cabo-verde', vida: 50, ataque: 25, defesa: 8, velocidade: 1.2, tamanho: 10, alcance: 12 },
             { nome: 'Aranha-armadeira', vida: 65, ataque: 35, defesa: 4, velocidade: 1.4, tamanho: 15, alcance: 18 },
 
-            // Pequenos e Médios Mamíferos
+            // Cães Domésticos
+            { nome: 'Chihuahua', vida: 25, ataque: 6, defesa: 1, velocidade: 1.8, tamanho: 7, alcance: 9 },
+            { nome: 'Pinscher', vida: 35, ataque: 10, defesa: 2, velocidade: 2.0, tamanho: 10, alcance: 12 },
+            { nome: 'Jack Russell Terrier', vida: 50, ataque: 12, defesa: 4, velocidade: 1.9, tamanho: 12, alcance: 14 },
+            { nome: 'Galgo', vida: 90, ataque: 20, defesa: 6, velocidade: 2.2, tamanho: 23, alcance: 26 },
+            { nome: 'Pastor Alemão', vida: 130, ataque: 30, defesa: 12, velocidade: 1.7, tamanho: 24, alcance: 28 },
+            { nome: 'Pitbull', vida: 160, ataque: 48, defesa: 18, velocidade: 1.7, tamanho: 25, alcance: 28 },
+            { nome: 'Rottweiler', vida: 180, ataque: 45, defesa: 20, velocidade: 1.6, tamanho: 27, alcance: 30 },
+            { nome: 'Mastim Tibetano', vida: 240, ataque: 50, defesa: 28, velocidade: 1.2, tamanho: 34, alcance: 38 },
+            
+            // Outros Mamíferos
             { nome: 'Rato', vida: 20, ataque: 5, defesa: 1, velocidade: 2.0, tamanho: 8, alcance: 10 },
             { nome: 'Humano Médio', vida: 100, ataque: 8, defesa: 5, velocidade: 1.4, tamanho: 20, alcance: 22 },
             { nome: 'Javali', vida: 160, ataque: 38, defesa: 22, velocidade: 1.5, tamanho: 24, alcance: 26 },
             { nome: 'Cervo', vida: 120, ataque: 20, defesa: 8, velocidade: 1.9, tamanho: 22, alcance: 25 },
             { nome: 'Lobo', vida: 150, ataque: 35, defesa: 15, velocidade: 1.8, tamanho: 25, alcance: 30 },
-            
-            // Grandes Predadores
             { nome: 'Onça-pintada', vida: 170, ataque: 50, defesa: 14, velocidade: 1.7, tamanho: 26, alcance: 30 },
             { nome: 'Gorila', vida: 220, ataque: 40, defesa: 25, velocidade: 1.3, tamanho: 30, alcance: 35 },
             { nome: 'Tigre', vida: 190, ataque: 55, defesa: 15, velocidade: 1.9, tamanho: 28, alcance: 32 },
+            { nome: 'Alce', vida: 280, ataque: 42, defesa: 28, velocidade: 1.2, tamanho: 36, alcance: 40 },
 
             // Répteis e "Assassinos"
             { nome: 'Mamba-negra', vida: 80, ataque: 60, defesa: 6, velocidade: 2.1, tamanho: 14, alcance: 18 },
             { nome: 'Crocodilo', vida: 300, ataque: 60, defesa: 40, velocidade: 0.8, tamanho: 35, alcance: 40 },
             
             // "Tanques" e Gigantes
-            { nome: 'Alce', vida: 280, ataque: 42, defesa: 28, velocidade: 1.2, tamanho: 36, alcance: 40 },
             { nome: 'Rinoceronte', vida: 350, ataque: 48, defesa: 35, velocidade: 1.0, tamanho: 38, alcance: 42 },
             { nome: 'Elefante', vida: 400, ataque: 50, defesa: 30, velocidade: 0.9, tamanho: 45, alcance: 50 },
         ];
@@ -128,55 +237,85 @@
         let idCounter = 0;
         let animationFrameId = null;
         const arena = document.getElementById('arena-container');
-        
-        // Todo o resto do JavaScript continua o mesmo
+
         function adicionarAnimal(numeroTime) {
             const nomeAnimal = document.getElementById('selecao-animal').value;
             const quantidade = parseInt(document.getElementById('quantidade-animal').value, 10);
             const animalBase = animaisBase.find(a => a.nome === nomeAnimal);
             const arenaRect = arena.getBoundingClientRect();
+
             for (let i = 0; i < quantidade; i++) {
                 const novoAnimal = {
-                    ...animalBase, id: idCounter++, vidaAtual: animalBase.vida, time: numeroTime,
-                    cooldownAtaque: Math.floor(Math.random() * 20 + 40), cooldownAtual: 0,
+                    ...animalBase,
+                    id: idCounter++,
+                    vidaAtual: animalBase.vida,
+                    time: numeroTime,
+                    cooldownAtaque: Math.floor(Math.random() * 20 + 40),
+                    cooldownAtual: 0,
                     target: null,
-                    x: (numeroTime === 1) ? Math.random() * arenaRect.width / 4 : arenaRect.width - Math.random() * arenaRect.width / 4,
-                    y: Math.random() * arenaRect.height, element: null
+                    x: (numeroTime === 1) ? Math.random() * (arenaRect.width / 4) + 20 : (arenaRect.width - 20) - Math.random() * (arenaRect.width / 4),
+                    y: Math.random() * (arenaRect.height - 40) + 20,
+                    element: null
                 };
+                
                 const timeArray = (numeroTime === 1) ? time1 : time2;
                 timeArray.push(novoAnimal);
                 criarCombatenteElement(novoAnimal);
             }
         }
+        
         function criarCombatenteElement(animal) {
             const el = document.createElement('div');
-            el.id = `animal-${animal.id}`; el.className = 'combatente';
-            el.style.width = `${animal.tamanho}px`; el.style.height = `${animal.tamanho}px`;
+            el.id = `animal-${animal.id}`;
+            el.className = 'combatente';
+            el.style.width = `${animal.tamanho}px`;
+            el.style.height = `${animal.tamanho}px`;
+            
             const cor = (animal.time === 1) ? 'var(--cor-time1)' : 'var(--cor-time2)';
-            el.innerHTML = `<div class="combatente-corpo" style="background-color: ${cor};"></div><div class="barra-vida-fundo"><div class="barra-vida-preenchimento" id="vida-${animal.id}"></div></div>`;
-            arena.appendChild(el); animal.element = el;
+            el.innerHTML = `
+                <div class="combatente-corpo" style="background-color: ${cor};"></div>
+                <div class="barra-vida-fundo">
+                    <div class="barra-vida-preenchimento" id="vida-${animal.id}"></div>
+                </div>
+            `;
+            arena.appendChild(el);
+            animal.element = el;
             atualizarPosicaoElement(animal);
         }
+        
         function atualizarPosicaoElement(animal) {
             animal.element.style.transform = `translate(${animal.x - animal.tamanho / 2}px, ${animal.y - animal.tamanho / 2}px)`;
         }
+
         function getDistance(animal1, animal2) {
-            const dx = animal1.x - animal2.x; const dy = animal1.y - animal2.y;
+            const dx = animal1.x - animal2.x;
+            const dy = animal1.y - animal2.y;
             return Math.sqrt(dx * dx + dy * dy);
         }
+        
         function loopLuta() {
-            [...time1, ...time2].forEach(animal => {
+            const todosOsVivos = [...time1, ...time2];
+
+            todosOsVivos.forEach(animal => {
                 const timeInimigo = (animal.time === 1) ? time2 : time1;
+
                 if (!animal.target || animal.target.vidaAtual <= 0) {
-                    let inimigoMaisProximo = null, menorDistancia = Infinity;
+                    let inimigoMaisProximo = null;
+                    let menorDistancia = Infinity;
                     timeInimigo.forEach(inimigo => {
                         const distancia = getDistance(animal, inimigo);
-                        if (distancia < menorDistancia) { menorDistancia = distancia; inimigoMaisProximo = inimigo; }
+                        if (distancia < menorDistancia) {
+                            menorDistancia = distancia;
+                            inimigoMaisProximo = inimigo;
+                        }
                     });
                     animal.target = inimigoMaisProximo;
                 }
+
                 if (!animal.target) return;
+
                 const distanciaDoAlvo = getDistance(animal, animal.target);
+                
                 if (distanciaDoAlvo > animal.alcance) {
                     const angle = Math.atan2(animal.target.y - animal.y, animal.target.x - animal.x);
                     animal.x += Math.cos(angle) * animal.velocidade;
@@ -187,6 +326,7 @@
                         const dano = Math.max(1, animal.ataque - animal.target.defesa);
                         animal.target.vidaAtual -= dano;
                         animal.cooldownAtual = animal.cooldownAtaque;
+                        
                         const hitEl = document.createElement('div');
                         hitEl.className = 'hit-effect';
                         animal.target.element.appendChild(hitEl);
@@ -194,19 +334,26 @@
                     }
                 }
             });
+
             const aRemover = [];
-            [...time1, ...time2].forEach(animal => {
+            todosOsVivos.forEach(animal => {
                 atualizarPosicaoElement(animal);
                 const percVida = Math.max(0, (animal.vidaAtual / animal.vida) * 100);
                 animal.element.querySelector(`#vida-${animal.id}`).style.width = `${percVida}%`;
-                if (animal.vidaAtual <= 0) { aRemover.push(animal); }
+
+                if (animal.vidaAtual <= 0) {
+                    aRemover.push(animal);
+                }
             });
+            
             aRemover.forEach(animal => {
                 animal.element.style.opacity = '0';
                 setTimeout(() => animal.element.remove(), 500);
             });
+            
             time1 = time1.filter(a => a.vidaAtual > 0);
             time2 = time2.filter(a => a.vidaAtual > 0);
+
             if (time1.length === 0 || time2.length === 0) {
                 cancelAnimationFrame(animationFrameId);
                 const titulo = document.getElementById('titulo-principal');
@@ -216,26 +363,37 @@
                 } else if (time1.length === 0 && time2.length > 0) {
                     titulo.innerText = "TIME 2 VENCEU!";
                     titulo.style.textShadow = '0 0 10px var(--cor-time2)';
-                } else { titulo.innerText = "ANIQUILAÇÃO MÚTUA!"; }
+                } else {
+                    titulo.innerText = "ANIQUILAÇÃO MÚTUA!";
+                    titulo.style.textShadow = '0 0 10px var(--cor-aviso)';
+                }
                 document.getElementById('botao-resetar').disabled = false;
                 return;
             }
+
             animationFrameId = requestAnimationFrame(loopLuta);
         }
+
         function iniciarLuta() {
             if (time1.length === 0 || time2.length === 0) return;
             document.querySelectorAll('button, input, select').forEach(el => el.disabled = true);
             document.getElementById('botao-resetar').disabled = false;
             animationFrameId = requestAnimationFrame(loopLuta);
         }
+        
         function resetarSimulacao() {
             cancelAnimationFrame(animationFrameId);
-            time1 = []; time2 = []; arena.innerHTML = '';
+            animationFrameId = null;
+            time1 = [];
+            time2 = [];
+            idCounter = 0;
+            arena.innerHTML = '';
             const titulo = document.getElementById('titulo-principal');
             titulo.innerText = "Simulador de Batalha Animal";
             titulo.style.textShadow = '0 0 10px var(--cor-primaria)';
             document.querySelectorAll('button, input, select').forEach(el => el.disabled = false);
         }
+
         animaisBase.sort((a, b) => a.nome.localeCompare(b.nome)).forEach(animal => {
             document.getElementById('selecao-animal').add(new Option(animal.nome, animal.nome));
         });
@@ -243,6 +401,9 @@
         document.getElementById('adicionar-time2').addEventListener('click', () => adicionarAnimal(2));
         document.getElementById('botao-lutar').addEventListener('click', iniciarLuta);
         document.getElementById('botao-resetar').addEventListener('click', resetarSimulacao);
+
     </script>
 </body>
-</html>
+</html>```
+
+Agora o seu simulador tem uma variedade ainda maior de cães, permitindo todo tipo de confronto maluco. Divirta-se testando as novas raças
