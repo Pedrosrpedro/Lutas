@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arena de Batalha Animal</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            color: #4CAF50;
+            font-size: 2.5em;
+        }
+        p {
+            font-size: 1.2em;
+            max-width: 800px;
+            margin: 0 auto 20px auto;
+        }
+        iframe {
+            width: 100%;
+            max-width: 1200px; /* Mesma largura máxima do simulador */
+            height: 85vh; /* 85% da altura da tela */
+            border: 3px solid #4CAF50;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(76, 175, 80, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Bem-vindo à Arena de Batalha Animal!</h1>
+    <p>Monte seus times de criaturas e assista ao caos se desenrolar no simulador abaixo.</p>
+
+    <!-- O iframe que vai carregar o seu simulador -->
+    <iframe src="simulador.html" title="Simulador de Batalha de Animais"></iframe>
+
+</body>
+</html>
