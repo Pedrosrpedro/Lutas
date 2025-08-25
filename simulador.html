@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Batalha de Animais</title> <!-- O título aqui é menos importante, mas bom para organização -->
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a1a1a;
+            color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px; /* Um pouco menos de padding para caber melhor no iframe */
+        }
+        .container {
+            width: 100%;
+            max-width: 1200px;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #4CAF50;
+        }
+        #painel-controle {
+            background-color: #2c2c2c;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        #painel-batalha {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        .time-container {
+            width: 48%;
+            background-color: #2c2c2c;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .time-container h3 {
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        .lista-animais {
+            list-style: none;
+            padding: 0;
+            height: 200px;
+            overflow-y: auto;
+        }
+        .lista-animais li {
+            background-color: #3e3e3e;
+            margin-bottom: 5px;
+            padding: 8px;
+            border-radius: 4px;
+        }
+        #log-luta {
+            background-color: #222;
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 15px;
+            height: 350px;
+            overflow-y: auto;
+            margin-top: 20px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+        }
+        #log-luta p {
+            margin: 0 0 5px 0;
+            padding-bottom: 5px;
+            border-bottom: 1px dashed #555;
+        }
+        #log-luta .vitoria {
+            color: #2ecc71;
+            font-weight: bold;
+            text-align: center;
+            font-size: 1.2em;
+        }
+        select, input, button {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #555;
+            background-color: #333;
+            color: #f0f0f0;
+        }
+        button {
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn-add { background-color: #3498db; }
+        .btn-add:hover { background-color: #2980b9; }
+        .btn-lutar { background-color: #e74c3c; font-weight: bold; }
+        .btn-lutar:hover { background-color: #c0392b; }
+        .btn-reset { background-color: #f39c12; }
+        .btn-reset:hover { background-color: #e67e22; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Simulador de Batalha de Animais</h1>
+
+        <div id="painel-controle">
+            <select id="selecao-animal"></select>
+            <input type="number" id="quantidade-animal" value="1" min="1">
+            <button id="adicionar-time1" class="btn-add">Adicionar ao Time 1</button>
+            <button id="adicionar-time2" class="btn-add">Adicionar ao Time 2</button>
+            <button id="botao-lutar" class="btn-lutar">INICIAR BATALHA</button>
+            <button id="botao-resetar" class="btn-reset">Resetar</button>
+        </div>
+
+        <div id="painel-batalha">
+            <div class="time-container">
+                <h3 id="titulo-time1">Time 1 (0 animais)</h3>
+                <ul id="lista-time1" class="lista-animais"></ul>
+            </div>
+            <div class="time-container">
+                <h3 id="titulo-time2">Time 2 (0 animais)</h3>
+                <ul id="lista-time2" class="lista-animais"></ul>
+            </div>
+        </div>
+        
+        <h2>Log da Batalha</h2>
+        <div id="log-luta">
+            <p>Monte os times e clique em INICIAR BATALHA!</p>
+        </div>
+    </div>
+
+    <script>
+        // TODO O JAVASCRIPT DO SIMULADOR VAI AQUI (exatamente como antes)
+        const animaisBase = [
+            // Insetos
+            { nome: 'Louva-a-deus', vida: 70, ataque: 15, velocidade: 80, imagem: 'CAMINHO_PARA_IMAGEM' },
+            { nome: 'Besouro-rinoceronte', vida: 100, ataque: 20, velocidade: 30, imagem: 'CAMINHO_PARA_IMAGEM' },
+            { nome: 'Formiga-cabo-verde', vida: 50, ataque: 25, velocidade: 50, imagem: 'CAMINHO_PARA_IMAGEM' },
+            { nome: 'Vespa-caçadora-de-tarântulas', vida: 60, ataque: 20, velocidade: 90, imagem: 'CAMINHO_PARA_IMAGEM' },
+
+            // Aracnídeos
+            { nome: 'Tarântula-golias', vida: 120, ataque: 22, velocidade: 40, imagem: 'CAMINHO_PARA_IMAGEM' },
+            { nome: 'Escorpião-imperador', vida: 110, ataque: 18, velocidade: 45, imagem: 'CAMINHO_PARA_IMAGEM' },
+            { nome: 'Viúva-negra', vida: 50, ataque: 30, velocidade: 60, imagem: 'CAMINHO_PARA_IMAGEM' },
+            { nome: 'Aranha-armadeira', vida: 65, ataque: 35, velocidade: 75, imagem: 'CAMINHO_PARA_IMAGEM' },
+
+            // Mamíferos
+            { nome: 'Leão', vida: 200, ataque: 40, velocidade: 70, imagem: 'CAMINHO_PARA_IMAGEM' },
+            { nome: 'Tigre', vida: 190, ataque: 45, velocidade: 75, imagem: 'CAMINHO_PARA_IMAGEM' },
+            { nome: 'Elefante', vida: 400, ataque: 35, velocidade: 20, imagem: 'CAMINHO_PARA_IMAGEM' },
+            { nome: 'Rinoceronte', vida: 350, ataque: 38, velocidade: 30, imagem: 'CAMINHO_PARA_IMAGEM' },
+            { nome: 'Gorila', vida: 220, ataque: 30, velocidade: 50, imagem: 'CAMINHO_PARA_IMAGEM' },
+            { nome: 'Urso-pardo', vida: 250, ataque: 35, velocidade: 45, imagem: 'CAMINHO_PARA_IMAGEM' },
+            { nome: 'Lobo', vida: 150, ataque: 25, velocidade: 80, imagem: 'CAMINHO_PARA_IMAGEM' },
+            { nome: 'Rato', vida: 20, ataque: 5, velocidade: 95, imagem: 'CAMINHO_PARA_IMAGEM' },
+            
+            // Répteis e Anfíbios
+            { nome: 'Crocodilo', vida: 300, ataque: 50, velocidade: 25, imagem: 'CAMINHO_PARA_IMAGEM' },
+            { nome: 'Dragão-de-komodo', vida: 180, ataque: 30, velocidade: 40, imagem: 'CAMINHO_PARA_IMAGEM' },
+            { nome: 'Sucuri', vida: 280, ataque: 25, velocidade: 15, imagem: 'CAMINHO_PARA_IMAGEM' },
+            { nome: 'Naja', vida: 100, ataque: 35, velocidade: 60, imagem: 'CAMINHO_PARA_IMAGEM' }
+        ];
+
+        let time1 = [];
+        let time2 = [];
+        let idCounter = 0;
+        let lutaInterval = null;
+
+        const selectAnimal = document.getElementById('selecao-animal');
+        const inputQuantidade = document.getElementById('quantidade-animal');
+        const logLuta = document.getElementById('log-luta');
+
+        function popularSelect() {
+            animaisBase.sort((a, b) => a.nome.localeCompare(b.nome)).forEach(animal => {
+                selectAnimal.add(new Option(animal.nome, animal.nome));
+            });
+        }
+
+        function adicionarAnimal(numeroTime) {
+            const nomeAnimal = selectAnimal.value;
+            const quantidade = parseInt(inputQuantidade.value, 10);
+            const animalBase = animaisBase.find(a => a.nome === nomeAnimal);
+
+            for (let i = 0; i < quantidade; i++) {
+                const novoAnimal = {
+                    ...animalBase,
+                    id: idCounter++,
+                    vidaAtual: animalBase.vida,
+                    cooldownAtaque: Math.floor(100 + Math.random() * 50 - animalBase.velocidade / 2),
+                    cooldownAtual: 0
+                };
+                if (numeroTime === 1) {
+                    time1.push(novoAnimal);
+                } else {
+                    time2.push(novoAnimal);
+                }
+            }
+            atualizarDisplayTimes();
+        }
+
+        function atualizarDisplayTimes() {
+            const lista1 = document.getElementById('lista-time1');
+            const lista2 = document.getElementById('lista-time2');
+            
+            document.getElementById('titulo-time1').innerText = `Time 1 (${time1.length} animais)`;
+            document.getElementById('titulo-time2').innerText = `Time 2 (${time2.length} animais)`;
+            
+            lista1.innerHTML = time1.map(a => `<li>${a.nome} (${a.vidaAtual}/${a.vida})</li>`).join('');
+            lista2.innerHTML = time2.map(a => `<li>${a.nome} (${a.vidaAtual}/${a.vida})</li>`).join('');
+        }
+
+        function adicionarLog(mensagem) {
+            logLuta.innerHTML += `<p>${mensagem}</p>`;
+            logLuta.scrollTop = logLuta.scrollHeight;
+        }
+
+        function iniciarLuta() {
+            if (time1.length === 0 || time2.length === 0) {
+                adicionarLog("Ambos os times precisam ter pelo menos um animal para lutar.");
+                return;
+            }
+            
+            document.querySelectorAll('button, input, select').forEach(el => el.disabled = true);
+            document.getElementById('botao-resetar').disabled = false;
+
+
+            logLuta.innerHTML = '';
+            adicionarLog("A BATALHA COMEÇA!");
+
+            lutaInterval = setInterval(loopLuta, 100);
+        }
+
+        function loopLuta() {
+            time1.forEach(atacante => {
+                if (time2.length > 0) {
+                    atacante.cooldownAtual--;
+                    if (atacante.cooldownAtual <= 0) {
+                        const alvo = time2[Math.floor(Math.random() * time2.length)];
+                        const variacaoDano = atacante.ataque * 0.4;
+                        const dano = Math.max(1, Math.round(atacante.ataque - variacaoDano + Math.random() * (variacaoDano * 2)));
+                        
+                        alvo.vidaAtual -= dano;
+                        adicionarLog(`[Time 1] ${atacante.nome} ataca ${alvo.nome} [Time 2] e causa ${dano} de dano!`);
+                        
+                        atacante.cooldownAtual = atacante.cooldownAtaque;
+                    }
+                }
+            });
+
+            time2.forEach(atacante => {
+                if (time1.length > 0) {
+                     atacante.cooldownAtual--;
+                    if (atacante.cooldownAtual <= 0) {
+                        const alvo = time1[Math.floor(Math.random() * time1.length)];
+                        const variacaoDano = atacante.ataque * 0.4;
+                        const dano = Math.max(1, Math.round(atacante.ataque - variacaoDano + Math.random() * (variacaoDano * 2)));
+                        
+                        alvo.vidaAtual -= dano;
+                        adicionarLog(`[Time 2] ${atacante.nome} ataca ${alvo.nome} [Time 1] e causa ${dano} de dano!`);
+
+                        atacante.cooldownAtual = atacante.cooldownAtaque;
+                    }
+                }
+            });
+
+            time1 = time1.filter(a => a.vidaAtual > 0);
+            time2 = time2.filter(a => a.vidaAtual > 0);
+
+            atualizarDisplayTimes();
+            
+            if (time1.length === 0 || time2.length === 0) {
+                clearInterval(lutaInterval);
+                lutaInterval = null;
+                
+                if (time1.length === 0 && time2.length === 0) {
+                    adicionarLog(`<p class="vitoria">EMPATE TÉCNICO! Ambos os times foram aniquilados!</p>`);
+                } else if (time2.length === 0) {
+                    adicionarLog(`<p class="vitoria">O TIME 1 É O VENCEDOR!</p>`);
+                } else {
+                    adicionarLog(`<p class="vitoria">O TIME 2 É O VENCEDOR!</p>`);
+                }
+                document.querySelectorAll('button, input, select').forEach(el => el.disabled = false);
+            }
+        }
+        
+        function resetarSimulacao() {
+            if (lutaInterval) {
+                clearInterval(lutaInterval);
+                lutaInterval = null;
+            }
+            time1 = [];
+            time2 = [];
+            idCounter = 0;
+            atualizarDisplayTimes();
+            logLuta.innerHTML = "<p>Simulação resetada. Monte novos times!</p>";
+            document.querySelectorAll('button, input, select').forEach(el => el.disabled = false);
+        }
+
+        document.getElementById('adicionar-time1').addEventListener('click', () => adicionarAnimal(1));
+        document.getElementById('adicionar-time2').addEventListener('click', () => adicionarAnimal(2));
+        document.getElementById('botao-lutar').addEventListener('click', iniciarLuta);
+        document.getElementById('botao-resetar').addEventListener('click', resetarSimulacao);
+
+        popularSelect();
+    </script>
+</body>
+</html>
